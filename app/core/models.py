@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import (
                                         AbstractBaseUser,
                                         BaseUserManager,
-                                        PermissionMixin
+                                        PermissionsMixin,
 )
 # User = get_user_model
 class UserManager(BaseUserManager):
@@ -13,7 +13,7 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 # Create your models here.
-class User(AbstractBaseUser,PermissionMixin):
+class User(AbstractBaseUser,PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
