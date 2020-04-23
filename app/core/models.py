@@ -4,16 +4,23 @@ from django.contrib.auth.models import (
                                         BaseUserManager,
                                         PermissionsMixin,
 )
-# User = get_user_model
 
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **kw):
-        user = self.model(email=email, **kw)
+        if not email:
+            raise ValueError('User must have an email')
+        user = self.model(email=self.normalize_email(email), **kw)
         user.set_password(password)
         user.save()
         return user
-# Create your models here.
+
+    def create_superuser(self, email, password):
+        user = self.create_user(email, password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+        return user
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -21,5 +28,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    object = UserManager()
+    is_superuser = models.BooleanField(default=False)
+    objects = UserManager()
     USERNAME_FIELD = 'email'
